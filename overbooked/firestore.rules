@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── User-scoped data ───────────────────────────────────────────────────────
+    // All data lives under /users/{userId}/.
+    // Users may only access their own documents.
+
+    match /users/{userId} {
+      // Allow users to read/write their own top-level user document.
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+
+      // ── Books subcollection ────────────────────────────────────────────────
+      // Users can fully manage their own books.
+      match /books/{bookId} {
+        allow read, write: if request.auth != null
+                           && request.auth.uid == userId;
+      }
+
+      // ── Stats subcollection ────────────────────────────────────────────────
+      // Users can read their own stats.
+      // NOTE: The Cloud Function uses the Firebase Admin SDK, which bypasses
+      // these security rules entirely — so the function can write stats freely.
+      // Direct writes from the client are allowed here so users can reset or
+      // initialize their stats document if needed. Restrict to read-only
+      // if you want to enforce server-only writes strictly.
+      match /stats/{statId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // ── Deny everything else ───────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
