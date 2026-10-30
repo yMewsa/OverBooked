@@ -1,8 +1,8 @@
-# 📚 Overbooked
+# Overbooked
 
-> **Track your reading. Own your shelf.**
+> **Acompanhe suas leituras. Organize sua estante.**
 
-Overbooked is a beautiful, production-ready Flutter application that transforms your reading life into a virtual bookshelf experience — inspired by Letterboxd's approach to film logging, but built for books. Search millions of titles via Google Books, organize them across three curated shelves, and watch your reading statistics update automatically.
+O Overbooked é um aplicativo em Flutter pronto para produção que transforma sua vida de leitor em uma experiência de estante virtual — inspirado no formato do Letterboxd para filmes, mas desenvolvido para livros. Pesquise milhões de títulos pela API do Google Books, organize-os em três estantes personalizadas e veja suas estatísticas de leitura serem atualizadas automaticamente.
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.3%2B-02569B?logo=flutter)](https://flutter.dev)
 [![Firebase](https://img.shields.io/badge/Firebase-Auth%20%7C%20Firestore-FFCA28?logo=firebase)](https://firebase.google.com)
@@ -11,285 +11,155 @@ Overbooked is a beautiful, production-ready Flutter application that transforms 
 
 ---
 
-## 📸 Screenshots
+## Capturas de Tela
 
-<!-- Add screenshots here -->
+<!-- Adicione as capturas de tela aqui -->
 
 ---
 
-## ✨ Features
+## Funcionalidades
 
-| Feature | Description |
+| Funcionalidade | Descrição |
 |---|---|
-| 📖 **Three Shelves** | Organize books as *Lendo agora*, *Quero ler*, or *Lidos e resenhados* |
-| 🔍 **Book Search** | Find any book using the Google Books API (title or author) |
-| 🔐 **Authentication** | Secure email/password sign-up and login via Firebase Auth |
-| ☁️ **Real-time Sync** | Firestore streams keep your shelf in sync across devices |
-| 📊 **Auto Statistics** | A Cloud Function auto-calculates books read, pages read, and pages this month |
-| ✏️ **Page Editor** | Manually enter/correct page counts via a 3-dot context menu |
-| 📴 **Offline Handling** | Graceful UI for no connection, empty states, and API failures |
+| **Três Estantes** | Organize os livros entre *Lendo agora*, *Quero ler* ou *Lidos e resenhados* |
+| **Busca de Livros** | Encontre qualquer livro utilizando a API do Google Books (por título ou autor) |
+| **Autenticação** | Cadastro e login seguros por e-mail e senha via Firebase Auth |
+| **Sincronização em Tempo Real** | Streams do Firestore mantêm sua estante atualizada em todos os dispositivos |
+| **Estatísticas Automáticas** | Uma Cloud Function calcula automaticamente total de livros lidos, páginas lidas e páginas lidas no mês |
+| **Editor de Páginas** | Insira ou corrija o número de páginas manualmente por um menu de contexto |
+| **Tratamento Offline** | Interface preparada para falta de conexão, estados vazios e falhas na API |
 
 ---
 
-## 🏗️ Architecture Overview
+## Visão Geral da Arquitetura
 
-The project follows a **layer-first** organization — every layer has a single responsibility.
+O projeto adota uma organização em camadas (layer-first), onde cada camada possui uma responsabilidade única.
 
-```
 overbooked/
 ├── lib/
-│   ├── main.dart              # Entry point, MultiProvider, AuthGate
-│   ├── firebase_options.dart  # ⚠️ Placeholder — generate with FlutterFire CLI
+│   ├── main.dart              # Ponto de entrada, MultiProvider, AuthGate
+│   ├── firebase_options.dart  # Placeholder — gerar via FlutterFire CLI
 │   ├── theme/
-│   │   └── app_theme.dart     # Colors, typography, ThemeData
+│   │   └── app_theme.dart     # Cores, tipografia e ThemeData
 │   ├── models/
-│   │   ├── book.dart          # Book model + BookStatus constants
-│   │   └── reading_stats.dart # ReadingStats model
+│   │   ├── book.dart          # Modelo de Livro + constantes de BookStatus
+│   │   └── reading_stats.dart # Modelo de estatísticas de leitura
 │   ├── services/
-│   │   ├── auth_service.dart      # FirebaseAuth wrapper
-│   │   ├── firestore_service.dart # Firestore CRUD + streams
-│   │   └── books_api_service.dart # Google Books HTTP client
+│   │   ├── auth_service.dart      # Abstração do FirebaseAuth
+│   │   ├── firestore_service.dart # CRUD do Firestore + streams
+│   │   └── books_api_service.dart # Cliente HTTP para a API do Google Books
 │   ├── providers/
-│   │   ├── auth_provider.dart       # Auth state (ChangeNotifier)
-│   │   ├── bookshelf_provider.dart  # Books + search state
-│   │   └── stats_provider.dart      # Reading stats state
+│   │   ├── auth_provider.dart       # Estado de autenticação (ChangeNotifier)
+│   │   ├── bookshelf_provider.dart  # Estado dos livros e da busca
+│   │   └── stats_provider.dart      # Estado das estatísticas de leitura
 │   ├── views/
 │   │   ├── auth/
 │   │   │   ├── login_view.dart
 │   │   │   └── signup_view.dart
 │   │   ├── bookshelf/
-│   │   │   └── bookshelf_view.dart  # Tab 1 — Estantes
+│   │   │   └── bookshelf_view.dart  # Aba 1 — Estantes
 │   │   ├── stats/
-│   │   │   └── stats_view.dart      # Tab 2 — Dados
+│   │   │   └── stats_view.dart      # Aba 2 — Dados
 │   │   ├── discover/
-│   │   │   └── discover_view.dart   # Tab 3 — Descoberta
+│   │   │   └── discover_view.dart   # Aba 3 — Descoberta
 │   │   ├── profile/
-│   │   │   └── profile_view.dart    # Tab 4 — Perfil
-│   │   └── main_shell.dart          # BottomNavigationBar scaffold
+│   │   │   └── profile_view.dart    # Aba 4 — Perfil
+│   │   └── main_shell.dart          # Estrutura com BottomNavigationBar
 │   └── widgets/
-│       ├── book_card.dart       # Book cover card with 3-dot menu
-│       ├── shelf_section.dart   # Labeled shelf row with wood divider
-│       ├── stat_card.dart       # Single metric card
-│       ├── add_book_sheet.dart  # Modal: add search result to shelf
-│       └── edit_pages_sheet.dart # Modal: edit page count
+│       ├── book_card.dart        # Cartão de capa do livro com menu de 3 pontos
+│       ├── shelf_section.dart    # Linha de estante rotulada com divisória de madeira
+│       ├── stat_card.dart        # Cartão de métrica individual
+│       ├── add_book_sheet.dart   # Modal: adicionar resultado da busca à estante
+│       └── edit_pages_sheet.dart # Modal: editar contagem de páginas
 ├── functions/
 │   ├── index.js      # Cloud Function (onBookStatusChanged)
 │   └── package.json
-├── firestore.rules   # Security rules
+├── firestore.rules   # Regras de segurança
 └── README.md
-```
 
-### State Management with Provider
+### Gerenciamento de Estado com Provider
 
-Three `ChangeNotifier` providers are registered globally via `MultiProvider` in `main.dart`:
+Três provedores baseados em `ChangeNotifier` são registrados globalmente via `MultiProvider` no arquivo `main.dart`:
 
-| Provider | Responsibility |
+| Provedor | Responsabilidade |
 |---|---|
-| `AuthProvider` | Listens to `FirebaseAuth.authStateChanges()`, exposes `user`, `isAuthenticated`, and async `signIn`/`signUp`/`signOut` methods |
-| `BookshelfProvider` | Subscribes to the user's Firestore books collection via a stream. Exposes filtered getters (`readingNow`, `wantToRead`, `read`) and Google Books search results |
-| `StatsProvider` | Subscribes to `/users/{userId}/stats/summary` in real time. Stats are written exclusively by the Cloud Function |
+| `AuthProvider` | Escuta as alterações de `FirebaseAuth.authStateChanges()`, expõe `user`, `isAuthenticated` e os métodos assíncronos `signIn`, `signUp` e `signOut` |
+| `BookshelfProvider` | Inscreve-se na coleção de livros do usuário no Firestore por meio de uma stream. Expõe getters filtrados (`readingNow`, `wantToRead`, `read`) e os resultados da busca no Google Books |
+| `StatsProvider` | Inscreve-se no documento `/users/{userId}/stats/summary` em tempo real. As estatísticas são gravadas exclusivamente pela Cloud Function |
 
-The root `AuthGate` widget uses `Consumer<AuthProvider>` to route between `LoginView` and `MainShell`. Once in `MainShell`, `initState` triggers `BookshelfProvider.init(userId)` and `StatsProvider.init(userId)` to begin streaming.
+O widget raiz `AuthGate` utiliza um `Consumer<AuthProvider>` para alternar o roteamento entre a `LoginView` e a `MainShell`. Após entrar na `MainShell`, o método `initState` dispara `BookshelfProvider.init(userId)` e `StatsProvider.init(userId)` para iniciar o fluxo de dados.
 
 ---
 
-## 🔥 Firebase Database Schema
+## Esquema do Banco de Dados Firebase
 
 ### `/users/{userId}/books/{bookId}`
 
-| Field | Type | Description |
+| Campo | Tipo | Descrição |
 |---|---|---|
-| `id` | `String` | Google Books volume ID or UUID |
-| `title` | `String` | Book title |
-| `authors` | `List<String>` | List of author names |
-| `coverUrl` | `String?` | HTTPS URL for book cover image |
-| `pageCount` | `int?` | Number of pages (null if unknown) |
+| `id` | `String` | ID do volume no Google Books ou UUID |
+| `title` | `String` | Título do livro |
+| `authors` | `List<String>` | Lista com os nomes dos autores |
+| `coverUrl` | `String?` | URL HTTPS para a imagem de capa |
+| `pageCount` | `int?` | Número de páginas (nulo se desconhecido) |
 | `status` | `String` | `'want_to_read'` \| `'reading'` \| `'read'` |
-| `updatedAt` | `Timestamp` | Last modification timestamp |
-| `completedAt` | `Timestamp?` | When book was marked as read (for monthly stats) |
+| `updatedAt` | `Timestamp` | Data e hora da última modificação |
+| `completedAt` | `Timestamp?` | Data e hora em que o livro foi marcado como lido (usado para estatísticas mensais) |
 
 ### `/users/{userId}/stats/summary`
 
-| Field | Type | Description |
+| Campo | Tipo | Descrição |
 |---|---|---|
-| `booksRead` | `int` | Cumulative count of books completed |
-| `pagesRead` | `int` | Cumulative pages read across all books |
-| `pagesReadThisMonth` | `int` | Pages read in the current calendar month |
-| `lastUpdated` | `Timestamp` | When the function last wrote to this document |
+| `booksRead` | `int` | Total acumulado de livros concluídos |
+| `pagesRead` | `int` | Total acumulado de páginas lidas em todos os livros |
+| `pagesReadThisMonth` | `int` | Páginas lidas no mês corrente |
+| `lastUpdated` | `Timestamp` | Data e hora em que a função atualizou o documento pela última vez |
 
 ---
 
-## ⚡ Cloud Function Logic
+## Lógica da Cloud Function
 
-The `onBookStatusChanged` function (in `functions/index.js`) fires on **every update** to a book document and:
+A função `onBookStatusChanged` (localizada em `functions/index.js`) é executada a **cada atualização** em um documento da coleção de livros e realiza o seguinte fluxo:
 
-1. **Checks** if the `status` field changed **to** `'read'` (ignores all other updates).
-2. **Extracts** `pageCount` safely — defaults to `0` if the field is missing, null, or not a positive number.
-3. **Determines** whether the completion date falls in the current calendar month (comparing `completedAt` year + month to today).
-4. **Writes atomically** to `/users/{userId}/stats/summary` using `FieldValue.increment` — no race conditions, no data loss.
-5. Uses `{ merge: true }` so the stats document is **created automatically** on first use.
+1. **Verifica** se o campo `status` foi alterado **para** `'read'` (ignorando qualquer outra modificação).
+2. **Extrai** o valor de `pageCount` com validação — define o valor padrão como `0` caso o campo esteja ausente, nulo ou não seja um número positivo.
+3. **Determina** se a data de conclusão pertence ao mês vigente (comparando ano e mês do campo `completedAt` com a data atual).
+4. **Executa uma escrita atômica** no caminho `/users/{userId}/stats/summary` usando `FieldValue.increment` para evitar condições de corrida e perda de dados.
+5. Utiliza a opção `{ merge: true }` para garantir que o documento de estatísticas seja **criado automaticamente** no primeiro uso.
 
-```
-Status changes to 'read'
-        │
-        ▼
-Extract pageCount (safe, default 0)
-        │
-        ▼
-Is completedAt this month?
-   YES ──► increment booksRead, pagesRead, pagesReadThisMonth
-   NO  ──► increment booksRead, pagesRead only
-        │
-        ▼
-Atomic write to /users/{userId}/stats/summary
-```
+Status alterado para 'read'
+│
+▼
+Extrai pageCount (validação com padrão 0)
+│
+▼
+A data completedAt pertence ao mês atual?
+SIM ──► Incrementa booksRead, pagesRead e pagesReadThisMonth
+NÃO ──► Incrementa apenas booksRead e pagesRead
+│
+▼
+Escrita atômica em /users/{userId}/stats/summary
 
 ---
 
-## 🚀 Setup Guide
+## Guia de Configuração
 
-### Prerequisites
+### Pré-requisitos
 
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) ≥ 3.3.0
-- [Firebase CLI](https://firebase.google.com/docs/cli) (`npm install -g firebase-tools`)
-- [FlutterFire CLI](https://firebase.flutter.dev/docs/cli/) (`dart pub global activate flutterfire_cli`)
-- Node.js ≥ 20 (for Cloud Functions)
-- A Google account with a Firebase project
+- SDK do Flutter a partir da versão 3.3.0
+- Firebase CLI instalado
+- FlutterFire CLI ativado
+- Node.js a partir da versão 20 (necessário para Cloud Functions)
+- Uma conta no Google com acesso ao Firebase Console
 
 ---
 
-### 1. Clone & Install Flutter Dependencies
+### 1. Clonar o Repositório e Instalar Dependências do Flutter
 
 ```bash
-# Clone the repository
-git clone <your-repo-url>
+# Clonar o repositório
+git clone <url-do-repositorio>
 cd overbooked
 
-# Install Flutter packages
+# Instalar dependências do projeto
 flutter pub get
-```
-
----
-
-### 2. Create Your Firebase Project
-
-1. Go to [console.firebase.google.com](https://console.firebase.google.com)
-2. Click **"Add project"** → name it (e.g., `overbooked`)
-3. **Enable Google Analytics** (optional)
-
----
-
-### 3. Configure Firebase Authentication
-
-1. In Firebase Console → **Authentication** → **Get started**
-2. Under **Sign-in method** → enable **Email/Password**
-
----
-
-### 4. Configure Firestore
-
-1. Firebase Console → **Firestore Database** → **Create database**
-2. Start in **Production mode**
-3. Choose a region close to your users
-
----
-
-### 5. Generate `firebase_options.dart` (FlutterFire CLI)
-
-```bash
-# Login to Firebase
-firebase login
-
-# In your Flutter project root:
-flutterfire configure
-```
-
-Select your Firebase project when prompted. This generates `lib/firebase_options.dart` with your app's credentials.
-
-> **Note:** The existing `lib/firebase_options.dart` is a placeholder that throws at runtime. Replace it with the generated file.
-
----
-
-### 6. Enable Google Books API
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Select the project linked to your Firebase app
-3. Navigate to **APIs & Services** → **Enable APIs and Services**
-4. Search for **"Books API"** and enable it
-5. Create an API key under **Credentials**
-6. In `lib/services/books_api_service.dart`, add your key:
-   ```dart
-   static const String _apiKey = 'YOUR_API_KEY_HERE';
-   // Then append: '&key=$_apiKey' to the URI queryParameters
-   ```
-
-> Without a key, the API works at a lower rate limit — fine for development.
-
----
-
-### 7. Deploy Firestore Security Rules
-
-```bash
-# From the project root
-firebase deploy --only firestore:rules
-```
-
----
-
-### 8. Deploy Cloud Functions
-
-```bash
-cd functions
-npm install
-cd ..
-firebase deploy --only functions
-```
-
-Verify in Firebase Console → **Functions** that `onBookStatusChanged` is listed.
-
----
-
-### 9. Run the App
-
-```bash
-flutter run
-```
-
-For release builds:
-```bash
-flutter build apk --release      # Android
-flutter build ios --release       # iOS (macOS required)
-flutter build web --release       # Web
-```
-
----
-
-## 🛠️ Development Tips
-
-- **Emulator Suite:** Use `firebase emulators:start` to test Functions and Firestore locally without touching production data.
-- **Debug mode:** The `firebase_options.dart` placeholder will crash immediately — always generate the real file before running.
-- **Hot reload:** Works fully with Provider — change UI code and see instant updates.
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Commit your changes: `git commit -m 'feat: add my feature'`
-4. Push: `git push origin feature/my-feature`
-5. Open a Pull Request
-
-Please follow existing code style and run `dart format .` before committing.
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
-
----
-
-<p align="center">
-  Made with ❤️ for readers everywhere.
-</p>
